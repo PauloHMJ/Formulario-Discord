@@ -54,7 +54,7 @@
     th, td {
       border: 1px solid #ddd;
       padding: 10px;
-      text-align: left;
+      text-align: center;
     }
     th {
       background-color: #3b82f6;
@@ -74,13 +74,14 @@
     <table id="tabela">
       <thead>
         <tr>
-          <th>Data</th>
+          <th>Data/Hora</th>
           <th>Nome Real</th>
           <th>Nick do Discord</th>
-          <th>Idade</th>
+          <th id="idade">Idade</th>
           <th>Escolaridade</th>
           <th>Experiência</th>
           <th>Cargo Desejado</th>
+          <th>Atividade</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -96,25 +97,33 @@
       try {
         const resp = await fetch("/respostas");
         const data = await resp.json();
-        tbody.innerHTML = "";
-        data.forEach(item => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${item.created}</td>
-            <td>${item.NomeReal || ""}</td>
-            <td>${item.NickDiscord || ""}</td>
-            <td>${item.Idade || ""}</td>
-            <td>${item.Escolaridade || ""}</td>
-            <td>${item.Experiencia || ""}</td>
-            <td>${item.CargoDesejado || ""}</td>
-          `;
-          tbody.appendChild(tr);
-        });
+        setTimeout(() => {
+      tbody.innerHTML = "";
+
+      data.forEach(item => {
+        const tr = document.createElement("tr");
+        const idadeColor = item.Idade && parseInt(item.Idade) <= 12 ? "red" : "inherit";
+
+        tr.innerHTML = `
+          <td>${item.created}</td>
+          <td>${item.NomeReal || ""}</td>
+          <td>${item.NickDiscord || ""}</td>
+          <td style="color: ${idadeColor}; font-weight: 600;">${item.Idade || ""}</td>
+          <td>${item.Escolaridade || ""}</td>
+          <td>${item.Experiencia || ""}</td>
+          <td>${item.CargoDesejado || ""}</td>
+          <td>${item.Atividade || ""}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }, 1000);
       } catch(err){
         tbody.innerHTML = "<tr><td colspan='7'>❌ Erro ao carregar dados.</td></tr>";
         console.error(err);
       }
     }
+
+
 
     btnAtualizar.addEventListener("click", carregarDados);
     document.getElementById("busca").addEventListener("input", function () {

@@ -1,67 +1,109 @@
 from flask import Flask, render_template, request, jsonify
-import sqlite3
+import mysql.connector
+from datetime import datetime, timedelta, timezone
 
 app = Flask(__name__)
 
-DB = "database.db"
+# --- Configurações do banco MySQL ---
+DB_WRITE = {
+    "host": "localhost",
+    "user": "program_user", 
+    "password": "6BvemY2Q4cMoS",
+    "database": "discord_staff_db"
+}
 
-# Cria a tabela se não existir
+DB_READ = {
+    "host": "localhost",
+    "user": "program_visualizer",
+    "password": "L465H92xpXVwf",
+    "database": "discord_staff_db"
+}
+
+BRASILIA = timezone(timedelta(hours=-3))
+
+# --- Criação da tabela se não existir ---
 def init_db():
-    conn = sqlite3.connect(DB)
+    conn = mysql.connector.connect(**DB_WRITE)
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS candidatos (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    created DATETIME DEFAULT CURRENT_TIMESTAMP,
-                    NomeReal TEXT,
-                    NickDiscord TEXT,
-                    Idade INTEGER,
-                    Escolaridade TEXT,
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    created VARCHAR(25),
+                    NomeReal VARCHAR(100),
+                    NickDiscord VARCHAR(100),
+                    Idade INT,
+                    Escolaridade VARCHAR(100),
                     Experiencia TEXT,
-                    CargoDesejado TEXT
+                    CargoDesejado VARCHAR(100),
+                    Atividade TEXT
                 )''')
     conn.commit()
     conn.close()
 
 init_db()
 
-# Página principal
+# --- Página principal (formulário) ---
 @app.route("/")
 def index():
     return render_template("index.html")
 
-# Página de respostas
+# --- Página de visualização das respostas ---
 @app.route("/ver-respostas")
 def respostas():
     return render_template("dados.html")
 
-# Rota para receber os dados do formulário
+# --- Verificação de nick duplicado ---
+@app.route("/verificar-nick", methods=["POST"])
+def verificar_nick():
+    data = request.json
+    nick = data.get("NickDiscord")
+
+    conn = mysql.connector.connect(**DB_READ)
+    c = conn.cursor()
+    c.execute("SELECT COUNT(*) FROM candidatos WHERE NickDiscord = %s", (nick,))
+    resultado = c.fetchone()[0]
+    conn.close()
+
+    if resultado > 0:
+        return jsonify({"existe": True})
+    return jsonify({"existe": False})
+
+# --- Enviar dados ---
 @app.route("/enviar", methods=["POST"])
 def enviar():
     data = request.json
-    conn = sqlite3.connect(DB)
+    data_criacao = datetime.now(BRASILIA).strftime("%d/%m/%Y %H:%M:%S")
+
+    conn = mysql.connector.connect(**DB_WRITE)
     c = conn.cursor()
-    c.execute('''INSERT INTO candidatos (NomeReal, NickDiscord, Idade, Escolaridade, Experiencia, CargoDesejado)
-                 VALUES (?, ?, ?, ?, ?, ?)''',
-              (data.get("NomeReal"),
-               data.get("NickDiscord"),
-               data.get("Idade"),
-               data.get("Escolaridade"),
-               data.get("Experiencia"),
-               data.get("CargoDesejado")))
+    sql = '''INSERT INTO candidatos 
+             (created, NomeReal, NickDiscord, Idade, Escolaridade, Experiencia, CargoDesejado, Atividade)
+             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)'''
+    valores = (
+        data_criacao,
+        data.get("NomeReal"),
+        data.get("NickDiscord"),
+        data.get("Idade"),
+        data.get("Escolaridade"),
+        data.get("Experiencia"),
+        data.get("CargoDesejado"),
+        data.get("AtividadeArea")
+    )
+    c.execute(sql, valores)
     conn.commit()
     conn.close()
+
     return jsonify({"success": True})
 
-# Rota para listar respostas em JSON
+
 @app.route("/respostas")
 def get_respostas():
-    conn = sqlite3.connect(DB)
-    conn.row_factory = sqlite3.Row
-    c = conn.cursor()
-    c.execute("SELECT * FROM candidatos ORDER BY created DESC")
-    rows = [dict(row) for row in c.fetchall()]
+    conn = mysql.connector.connect(**DB_READ)
+    c = conn.cursor(dictionary=True)
+    c.execute("SELECT * FROM candidatos ORDER BY id DESC")
+    rows = c.fetchall()
     conn.close()
     return jsonify(rows)
+
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)

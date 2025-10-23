@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Formulário de Candidatura</title>
 
-  <!-- Link correto para o CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -14,50 +13,116 @@
     <h2>Formulário de Candidatura</h2>
 
     <form id="formulario" method="post">
-      <!-- Nome -->
+
       <label for="nome">Nome Real (opcional)</label>
       <input type="text" id="nome" name="NomeReal" placeholder="Seu nome completo (opcional)">
 
-      <!-- Nick -->
-      <label for="nick">Nick do Discord</label>
-      <input type="text" id="nick" name="NickDiscord" placeholder="Ex: @Exemplo#1234" required>
 
-      <!-- Idade -->
+      <label for="nick">Nick do Discord</label>
+      <input type="text" id="nick" name="NickDiscord" placeholder="Ex: Exemplo#1234" required>
+
+
       <label for="idade">Idade</label>
       <input type="number" id="idade" name="Idade" min="10" max="99" required>
 
-      <!-- Escolaridade -->
       <label>Escolaridade</label>
       <div class="radio-box">
         <div class="radio-group">
           <label><input type="radio" name="Escolaridade" value="Cursando Ensino Fundamental" required> Cursando Ensino Fundamental</label>
           <label><input type="radio" name="Escolaridade" value="Cursando Ensino Médio"> Cursando Ensino Médio</label>
           <label><input type="radio" name="Escolaridade" value="Cursando Ensino Superior"> Cursando Ensino Superior</label>
+          <label><input type="radio" name="Escolaridade" value="Trabalhando"> Trabalhando</label>
+          <label><input type="radio" name="Escolaridade" value="Outro"> Outro</label>
         </div>
       </div>
 
-      <!-- Experiência -->
+
       <label for="experiencia">Já fez parte de algum servidor do Discord? Explique:</label>
       <textarea id="experiencia" name="Experiencia" placeholder="Conte um pouco sobre sua experiência..."></textarea>
 
-      <!-- Cargo -->
+
       <label>Qual cargo deseja?</label>
       <div class="radio-box">
         <div class="radio-group">
-          <label><input type="radio" name="CargoDesejado" value="Moderador" required> Moderador</label>
-          <label><input type="radio" name="CargoDesejado" value="Mov.call"> Mov.call</label>
-          <label><input type="radio" name="CargoDesejado" value="Eventos"> Eventos</label>
-          <label><input type="radio" name="CargoDesejado" value="Promotor"> Promotor</label>
-        </div>
-      </div>
+      <label>
+      <input type="radio" name="CargoDesejado" value="Moderador" required>
+      Moderador
+      <span class="tooltip">❔
+        <span class="tooltip-text">
+          Responsável por manter o bem-estar da comunidade, tornando-a civilizada.<br>
+          Também atua atendendo tickets na central de atendimento.
+        </span>
+      </span>
+    </label>
 
-      <!-- Botão -->
+    <label>
+      <input type="radio" name="CargoDesejado" value="Cerimonialista">
+      Cerimonialista
+      <span class="tooltip">❔
+        <span class="tooltip-text">
+          Responsável por trazer engajamento para a comunidade,<br>
+          planejando e elaborando eventos e/ou sorteios interessantes.
+        </span>
+      </span>
+    </label>
+
+    <label>
+      <input type="radio" name="CargoDesejado" value="Designer">
+      Designer
+      <span class="tooltip">❔
+        <span class="tooltip-text">
+          Responsável pela criação das artes do servidor (banners, ícones, decorações, etc).<br>
+          Cria a identidade visual e deixa o servidor único e reconhecível.
+        </span>
+      </span>
+    </label>
+
+    <label>
+      <input type="radio" name="CargoDesejado" value="Promotor">
+      Promotor
+      <span class="tooltip">❔
+        <span class="tooltip-text">
+          Responsável por promover o servidor e fechar parcerias.
+        </span>
+      </span>
+    </label>
+
+    <label>
+      <input type="radio" name="CargoDesejado" value="Suporte">
+      Suporte
+      <span class="tooltip">❔
+        <span class="tooltip-text">
+          Responsável por trazer atividade constante, orientar e receber novos membros.<br>
+          Ideal para pessoas extrovertidas e ativas no Discord.
+        </span>
+      </span>
+    </label>
+  </div>
+</div>
+
+      <label for="atividade">Atividade ou área especifica</label>
+      <input type="text" id="atividade" name="AtividadeArea" placeholder="Fale alguma outra área que você também tenha interesse!">
+
+
       <button type="submit">Enviar</button>
       <div id="mensagem"></div>
     </form>
   </div>
 
-  <!-- Script JS -->
+
+   <div class="backdrop" id="popupBackdrop">
+    <div class="popup-card">
+      <button class="close-popup" id="closePopup">✕</button>
+      <div class="popup-content">
+        <div class="popup-icon">✅</div>
+        <h3>Enviado!</h3>
+        <p>Formulário enviado com sucesso 🎉</p>
+      </div>
+    </div>
+  </div>
+  
   <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+
 </body>
 </html>
