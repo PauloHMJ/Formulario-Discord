@@ -114,6 +114,13 @@ python app.py
 http://localhost:5000
 ```
 
+### Acesse no navegador para ver as respostas enviadas
+
+```
+http://localhost:5000/ver-respostas
+```
+
+
 ---
 
 # 🎯 Objetivo do Projeto
