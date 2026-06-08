@@ -4,24 +4,24 @@ from datetime import datetime, timedelta, timezone
 
 app = Flask(__name__)
 
-# --- Configurações do banco MySQL ---
+
 DB_WRITE = {
     "host": "localhost",
     "user": "program_user", 
-    "password": "6BvemY2Q4cMoS",
+    "password": "", #SENHA AQUI
     "database": "discord_staff_db"
 }
 
 DB_READ = {
     "host": "localhost",
     "user": "program_visualizer",
-    "password": "L465H92xpXVwf",
+    "password": "", #SENHA AQUI
     "database": "discord_staff_db"
 }
 
 BRASILIA = timezone(timedelta(hours=-3))
 
-# --- Criação da tabela se não existir ---
+
 def init_db():
     conn = mysql.connector.connect(**DB_WRITE)
     c = conn.cursor()
@@ -41,17 +41,17 @@ def init_db():
 
 init_db()
 
-# --- Página principal (formulário) ---
+
 @app.route("/")
 def index():
     return render_template("index.html")
 
-# --- Página de visualização das respostas ---
+
 @app.route("/ver-respostas")
 def respostas():
     return render_template("dados.html")
 
-# --- Verificação de nick duplicado ---
+
 @app.route("/verificar-nick", methods=["POST"])
 def verificar_nick():
     data = request.json
@@ -67,7 +67,7 @@ def verificar_nick():
         return jsonify({"existe": True})
     return jsonify({"existe": False})
 
-# --- Enviar dados ---
+
 @app.route("/enviar", methods=["POST"])
 def enviar():
     data = request.json
